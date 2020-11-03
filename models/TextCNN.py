@@ -13,8 +13,8 @@ class Config(object):
         self.train_path = dataset + '/data/train.txt'                                # 训练集
         self.dev_path = dataset + '/data/dev.txt'                                    # 验证集
         self.test_path = dataset + '/data/test.txt'                                  # 测试集
-        self.class_list = [x.strip() for x in open(
-            dataset + '/data/class.txt', encoding='utf-8').readlines()]              # 类别名单
+        self.all_path = './dataset'
+        self.class_list = ['QZS', 'MY', 'LX', 'ZAL', 'WXB']
         self.vocab_path = dataset + '/data/vocab.pkl'                                # 词表
         self.save_path = dataset + '/saved_dict/' + self.model_name + '.ckpt'        # 模型训练结果
         self.log_path = dataset + '/log/' + self.model_name
@@ -28,7 +28,7 @@ class Config(object):
         self.num_classes = len(self.class_list)                         # 类别数
         self.n_vocab = 0                                                # 词表大小，在运行时赋值
         self.num_epochs = 20                                            # epoch数
-        self.batch_size = 128                                           # mini-batch大小
+        self.batch_size = 64                                            # mini-batch大小
         self.pad_size = 32                                              # 每句话处理成的长度(短填长切)
         self.learning_rate = 1e-3                                       # 学习率
         self.embed = self.embedding_pretrained.size(1)\

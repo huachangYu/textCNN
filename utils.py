@@ -6,10 +6,13 @@ import pickle as pkl
 from tqdm import tqdm
 import time
 from datetime import timedelta
+import random
 
 
 MAX_VOCAB_SIZE = 10000  # 词表长度限制
 UNK, PAD = '<UNK>', '<PAD>'  # 未知字，padding符号
+
+name2label = {'QZS': 0, 'MY': 1, 'LX': 2, 'ZAL': 3, 'WXB': 4}
 
 
 def build_vocab(file_path, tokenizer, max_size, min_freq):
@@ -28,7 +31,7 @@ def build_vocab(file_path, tokenizer, max_size, min_freq):
     return vocab_dic
 
 
-def build_dataset(config, ues_word):
+def build_dataset(config, ues_word=False):
     if ues_word:
         tokenizer = lambda x: x.split(' ')  # 以空格隔开，word-level
     else:
@@ -39,32 +42,38 @@ def build_dataset(config, ues_word):
         vocab = build_vocab(config.train_path, tokenizer=tokenizer, max_size=MAX_VOCAB_SIZE, min_freq=1)
         pkl.dump(vocab, open(config.vocab_path, 'wb'))
     print(f"Vocab size: {len(vocab)}")
-
-    def load_dataset(path, pad_size=32):
+    
+    def load_dataset_dirs(path, pad_size = 32, test_rate = 0.3, dev_rate = 0.1):
         contents = []
-        with open(path, 'r', encoding='UTF-8') as f:
-            for line in tqdm(f):
-                lin = line.strip()
-                if not lin:
-                    continue
-                content, label = lin.split('\t')
-                words_line = []
-                token = tokenizer(content)
-                seq_len = len(token)
-                if pad_size:
-                    if len(token) < pad_size:
-                        token.extend([PAD] * (pad_size - len(token)))
-                    else:
-                        token = token[:pad_size]
-                        seq_len = pad_size
-                # word to id
-                for word in token:
-                    words_line.append(vocab.get(word, vocab.get(UNK)))
-                contents.append((words_line, int(label), seq_len))
-        return contents  # [([...], 0), ([...], 1), ...]
-    train = load_dataset(config.train_path, config.pad_size)
-    dev = load_dataset(config.dev_path, config.pad_size)
-    test = load_dataset(config.test_path, config.pad_size)
+        files = os.listdir(path)
+        for file in files:
+            with open(path + '/' + file, 'r', encoding='UTF-8') as f:
+                name = file.split('.')[0]
+                label = name2label[name]
+                for line in tqdm(f):
+                    content = line.strip()
+                    words_line = []
+                    token = tokenizer(content)
+                    seq_len = len(token)
+                    if pad_size:
+                        if len(token) < pad_size:
+                            token.extend([PAD] * (pad_size - len(token)))
+                        else:
+                            token = token[:pad_size]
+                            seq_len = pad_size
+                    # word to id
+                    for word in token:
+                        words_line.append(vocab.get(word, vocab.get(UNK)))
+                    contents.append((words_line, label, seq_len))
+        random.shuffle(contents)
+        contentLen = len(contents)
+        ind0 = int((1 - test_rate - dev_rate) * contentLen)
+        ind1 = int((1 - dev_rate) * contentLen)
+        train_data = contents[:ind0]
+        test_data = contents[ind0 + 1 : ind1]
+        dev_data = contents[ind1 + 1 : ]
+        return train_data, test_data, dev_data
+    train, test, dev = load_dataset_dirs(config.all_path, config.pad_size)
     return vocab, train, dev, test
 
 
