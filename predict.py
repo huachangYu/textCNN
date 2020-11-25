@@ -1,5 +1,4 @@
 from importlib import import_module
-from train_eval import train, init_network
 import torch
 import os
 import pickle as pkl
@@ -8,7 +7,7 @@ UNK, PAD = '<UNK>', '<PAD>'  # 未知字，padding符号
 class_list = ['QZS', 'MY', 'LX', 'ZAL', 'WXB']
 
 module = import_module('models.TextCNN')
-config = module.Config('THUCNews', 'embedding_SougouNews.npz')
+config = module.Config('data', 'embedding_SougouNews.npz')
 
 tokenizer = lambda x: [y for y in x]  # char-level
 if os.path.exists(config.vocab_path):

@@ -8,7 +8,7 @@ from utils import build_dataset, build_iterator, get_time_dif
 
 
 if __name__ == '__main__':
-    dataset = 'THUCNews'  # 数据集
+    dataset = 'data'  # 数据集
     embedding = 'embedding_SougouNews.npz'
     model_name = "TextCNN"
 

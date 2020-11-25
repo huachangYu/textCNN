@@ -43,7 +43,7 @@ def build_dataset(config, ues_word=False):
         pkl.dump(vocab, open(config.vocab_path, 'wb'))
     print(f"Vocab size: {len(vocab)}")
     
-    def load_dataset_dirs(path, pad_size = 32, test_rate = 0.3, dev_rate = 0.1):
+    def load_dataset_dirs(path, pad_size = 32, test_rate = 0.1, dev_rate = 0.1):
         contents = []
         files = os.listdir(path)
         for file in files:
@@ -137,11 +137,11 @@ def get_time_dif(start_time):
 if __name__ == "__main__":
     '''提取预训练词向量'''
     # 下面的目录、文件名按需更改。
-    train_dir = "./THUCNews/data/train.txt"
-    vocab_dir = "./THUCNews/data/vocab.pkl"
-    pretrain_dir = "./THUCNews/data/sgns.sogou.char"
+    train_dir = "./data/data/train.txt"
+    vocab_dir = "./data/data/vocab.pkl"
+    pretrain_dir = "./data/data/sgns.sogou.char"
     emb_dim = 300
-    filename_trimmed_dir = "./THUCNews/data/embedding_SougouNews"
+    filename_trimmed_dir = "./data/data/embedding_SougouNews"
     if os.path.exists(vocab_dir):
         word_to_id = pkl.load(open(vocab_dir, 'rb'))
     else:
