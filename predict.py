@@ -33,7 +33,11 @@ def txt2tensor(content, pad_size = 32):
     # word to id
     for word in token:
         words_line.append(vocab.get(word, vocab.get(UNK)))
-    return torch.Tensor([words_line]).long(), torch.Tensor([32]).long()
+    # is cuda
+    if torch.cuda.is_available():
+        return torch.Tensor([words_line]).long().cuda(), torch.Tensor([32]).long().cuda()
+    else:
+        return torch.Tensor([words_line]).long(), torch.Tensor([32]).long()
 
 if __name__ == "__main__":
     sen = "我听到一声尖叫，感觉到蹄爪戳在了一个富有弹性的东西上。定睛一看，不由怒火中烧。原来，趁着我不在，隔壁那个野杂种——沂蒙山猪刁小三，正舒坦地趴在我的绣榻上睡觉。我的身体顿时痒了起来，我的目光顿时凶了起来。"
